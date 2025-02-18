@@ -404,7 +404,7 @@ To refine our understanding of power users and optimize engagement strategies, I
   - What other Fetch products (e.g., cashback, rewards) do they engage with?
 - **Retention rates**
   - Do users stay engaged over time, or do they churn quickly?
-- **Acquisition Channel Information**
+- **Acquisition Channel**
   - Where did power users come from (e.g., ads, referrals, organic downloads)?
   - Do different marketing channels produce more power users?
 - **Spending & Loyalty Data**
