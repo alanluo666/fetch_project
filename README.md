@@ -113,6 +113,10 @@ For each dataset, I followed this procedure:
 - `MANUFACTURER`: Contains placeholder values `"NONE"`, `"PLACEHOLDER"`. Should we replace these with `NULL`?
 - `BARCODE`: Not unique and stored as a float. Should be converted to an integer and used as a unique identifier.
 
+---
+
+<img width="858" alt="visualizations" src="https://github.com/user-attachments/assets/f8ff27e5-d367-4b39-8ab8-9e9e58e65934" />
+
 ## **SQL Querying**
 
 Closed-ended question 1:
@@ -225,12 +229,77 @@ Open-ended question 3:
 
 **Who are Fetch’s power users?**
 
+---
+
 Assumptions:
-1. Definition of Power Users
-- Fetch offers multiple products (e.g., cashback, product-specific rewards, receipt uploads), but our dataset only contains **receipt-related** data.
+1. **Definition of Power Users**
+- Fetch offers multiple products (e.g., brand purchases, special offers, receipt uploads), but our dataset only contains **receipt-related** data.
 - Therefore, power users in this analysis refer specifically to **users who actively scan receipts** rather than being representative of all Fetch users.
 
+2. **Data Availability & Limitations**
+- The **transactions** table consists of scanned receipts from **June to September 2024**, which is the entire dataset available.
+- This means that power users are identified **only within this time period**, without insights into longer-term behaviors.
+- The **users** table contains accounts created between **April 2014 and September 2024**, but it’s unclear if this dataset includes all users or a subset.
 
+3. **Data Interpretation Assumptions**
+- The dataset is **unstructured**, and we infer the following based on a deep dive:
+  - `final_quantity = 0` likely indicates **canceled** transactions.
+  - `final_sale` represents **total sales** per transaction, rather than item-level prices.
+- However, it would be beneficial to confirm these assumptions with business stakeholders.
+
+4. **RFM Model to Identify Power Users**
+- We score users based on **Recency**, **Frequency**, and **Monetary** value (RFM) of receipt scanning.
+- Each factor is scored from **0 to 5**, with a maximum score of **15**.
+- The **top 20%** of users (by RFM score) are defined as power users, meaning they:
+  - Scan receipts the most recently
+  - Scan receipts the most frequently
+  - Have the highest total spend
+- We then analyze their demographic and behavioral traits to uncover insights and potential strategies to increase the number of power users.
+
+---
+
+Insights:
+1. **Small Sample Size**
+- The transactions table has 17,694 unique users, and the users table has 100,000 unique users.
+- However, after joining these two tables, **only 91 unique users** remain.
+- This indicates that a significant portion of users is missing from the analysis, limiting our ability to generate broader insights on power user behavior.
+- Since we define power users as the top 20%, this results in **fewer than 20 users**, making it difficult to generalize trends.
+
+2. **Key Differentiator: Age**
+- Most demographic factors (account age, state, language, gender) **do not differ significantly** between power and non-power users.
+- However, **age** does show a distinction:
+  - Power Users: Average age 46.7 years, mostly between 30-40 years old.
+  - Non-Power Users: Average age 55.1 years, mostly between 50-65 years old.
+- This suggests that younger users may be more engaged with receipt scanning.
+<img src="https://github.com/user-attachments/assets/ea70236e-f9a4-43a2-95a7-4da98dc52734" width="500" />
+
+---
+
+**Additional Data that Helps**
+
+To better understand who Fetch’s **power users** are and how to **grow this segment**, additional data points would be highly valuable:
+1. **More Comprehensive User Data**
+- Ensure we have a complete user dataset, rather than a small subset, to allow for broader analysis.
+2. **User Behavior & Engagement Data**
+- How often do users open the app?
+- What activities do they have after opening the app?
+- Do power users use Fetch for other products (e.g., cashback, product rewards)?
+3. **Retention & Churn Rates**
+- What percentage of power users remain engaged over time?
+- Are they long-term Fetch users, or do they churn quickly?
+- How does their behavior compare to non-power users in terms of drop-off rates?
+4. **Acquisition Channel**
+- Where did power users come from (e.g., ads, referrals, organic app downloads)?
+- How can we optimize marketing efforts to acquire similar users?
+5. **Receipt & Spending Patterns**
+- How does their spending behavior evolve over time?
+6. **Personalization & Loyalty Factors**
+- Do power users engage more with Fetch rewards, promotions, or personalized offers?
+- Would exclusive power user incentives increase retention and engagement?
+
+More data availability would increase our ability to better define power users, understand what drives their engagement, and develop strategies to attract and retain more of them.
+
+---
 
 ```sql
 -- get the RFM data for each user
@@ -283,9 +352,71 @@ LEFT JOIN USER_TAKEHOME u ON r.user_id = u.id
 ORDER BY rfm_score DESC
 ```
 
-## **Next Steps**
+## **Stakeholder Communication**
 
-- Clean and standardize inconsistent fields (`FINAL_QUANTITY`, `GENDER`, `LANGUAGE`).
-- Address missing values based on business context (`CATEGORY_4`, `FINAL_SALE`, `BARCODE`).
-- Determine if a unique product ID should be created.
-- Perform deeper exploratory data analysis (EDA) if needed.
+Question:
+
+Construct an email that is understandable to a leader who is not familiar with your day-to-day work. Summarize the results of your investigation. Include:
+- Key data quality issues and outstanding questions about the data
+- One interesting trend in the data
+  - Use a finding from part 2 or come up with a new insight
+- Request for action: explain what additional help, info, etc. you need to make sense of the data and resolve any outstanding issues
+
+---
+
+Subject: Data Quality, Power User Insights, & Next Steps
+
+Hi [Leader's Name],
+
+This is Yu from the data analytics team. I wanted to share key findings from my recent analysis of our `USERS`, `TRANSACTIONS`, and `PRODUCTS` datasets. This email includes (1) data quality concerns, (2) one interesting trend, and (3) a request for additional information to improve insights.
+
+1. **Data Quality Issues & Next Steps**
+
+While cleaning and analyzing the data, I identified several data quality concerns that could impact our ability to generate accurate insights:
+- `Users` dataset has missing values, inconsistent `GENDER` labels, and `LANGUAGE` codes that could be improved.
+- `Transactions` dataset lacks a Primary Key, has missing and inconsistent `FINAL_SALE` and `FINAL_QUANTITY` values, and contains duplicates.
+- `Products dataset` has significant missing values, duplicate PRIMARY KEY `BARCODEs`, and placeholder `MANUFACTURER` data.
+
+I have already cleaned the data and generated a list of Fetch’s power users, and I will collaborate with the data engineering team to resolve these issues at the source to ensure data quality for future analyses.
+
+2. **Key Insight: Age Differentiates Power Users**
+
+One interesting finding is that age appears to be a key differentiator among power users:
+- The average age of power users is 46.7 years, while non-power users are older on average (55.1 years).
+- Power users tend to be between 30-40 years old, while non-power users cluster around 50-65 years old.
+
+This suggests that younger users are more engaged with receipt scanning, which may inform targeted engagement strategies for future growth.
+
+Other available data—such as `ACCOUNT_AGE`, `STATE`, `LANGUAGE`, and `GENDER`—show no significant differences between power and non-power users.
+
+However, due to data limitations, further validation is required before drawing firm conclusions:
+- The `TRANSACTIONS` dataset contains 17,694 unique users, and the `USERS` dataset contains 100,000 unique users, but only 91 users remain after joining the two datasets.
+- This small sample size makes it difficult to generalize trends accurately.
+
+3. **Additional Data Needed for Deeper Insights**
+
+To refine our understanding of power users and optimize engagement strategies, I recommend gathering the following data:
+- **More Comprehensive Data**
+  - Ensure we have complete datasets, as the current one only allows us to analyze 91 users.
+- **User Engagement & Retention Data**
+  - How often do users open the app?
+  - What activities do they have after opening the app?
+  - What other Fetch products (e.g., cashback, rewards) do they engage with?
+- **Retention rates**
+  - Do users stay engaged over time, or do they churn quickly?
+- **Acquisition Channel Information**
+  - Where did power users come from (e.g., ads, referrals, organic downloads)?
+  - Do different marketing channels produce more power users?
+- **Spending & Loyalty Data**
+  - Do power users spend more per transaction, or do they scan more frequently?
+  - Are they more likely to engage with exlusive rewards than other users?
+
+This additional data would significantly enhance our ability to identify, engage, and grow our most valuable users.
+
+Would you be able to help facilitate access to these data points, or connect me with the right team to discuss further?
+
+Looking forward to your thoughts!
+
+Best,  
+Yu  
+Data Analyst
