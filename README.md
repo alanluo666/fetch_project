@@ -364,7 +364,7 @@ Construct an email that is understandable to a leader who is not familiar with y
 
 ---
 
-Subject: Data Quality, Power User Insights, & Next Steps
+Subject: **Data Quality, Power User Insights, & Next Steps**
 
 Hi [Leader's Name],
 
