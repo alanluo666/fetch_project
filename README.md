@@ -398,7 +398,7 @@ However, due to data limitations, further validation is required before drawing 
 To refine our understanding of power users and optimize engagement strategies, I recommend gathering the following data:
 - **More Comprehensive Data**
   - Ensure we have complete datasets, as the current one only allows us to analyze 91 users.
-- **User Engagement & Retention Data**
+- **User Engagement Data**
   - How often do users open the app?
   - What activities do they have after opening the app?
   - What other Fetch products (e.g., cashback, rewards) do they engage with?
