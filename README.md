@@ -275,7 +275,7 @@ Insights:
 
 ---
 
-**Additional Data that Helps**
+Additional Data that Helps:
 
 To better understand who Fetch’s **power users** are and how to **grow this segment**, additional data points would be highly valuable:
 1. **More Comprehensive User Data**
